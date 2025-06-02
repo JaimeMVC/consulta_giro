@@ -1,20 +1,36 @@
-{% if resultado %}
-    {% if resultado == "No encontrado" %}
-        <p>Material no encontrado.</p>
-    {% else %}
-        <h3>Resultado:</h3>
-        <ul>
-            <li><strong>Código:</strong> {{ resultado.codigo }}</li>
-            <li><strong>Nombre:</strong> {{ resultado.nombre }}</li>
-            <li><strong>Cantidad:</strong> {{ resultado.cantidad }}</li>
-            <li><strong>Unidad:</strong> {{ resultado.unidad }}</li>
-            <li><strong>Ubicación:</strong> {{ resultado.ubicacion }}</li>
-        </ul>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consulta de Stock</title>
+</head>
+<body>
+    <h1>Consulta de Material</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="codigo">Código de material:</label>
+        <input type="text" name="codigo" id="codigo">
+        <button type="submit">Buscar</button>
+    </form>
 
-        {% if resultado.cantidad < 0 %}
-            <p style="color:red;"><strong>Pagar ({{ resultado.cantidad }})</strong></p>
+    {% if resultado %}
+        {% if resultado == "No encontrado" %}
+            <p>Material no encontrado.</p>
         {% else %}
-            <p style="color:green;"><strong>Sin stock para pagar</strong></p>
+            <h3>Resultado:</h3>
+            <ul>
+                <li><strong>Código:</strong> {{ resultado.codigo }}</li>
+                <li><strong>Nombre:</strong> {{ resultado.nombre }}</li>
+                <li><strong>Cantidad:</strong> {{ resultado.cantidad }}</li>
+                <li><strong>Unidad:</strong> {{ resultado.unidad }}</li>
+                <li><strong>Ubicación:</strong> {{ resultado.ubicacion }}</li>
+            </ul>
+
+            {% if resultado.cantidad < 0 %}
+                <p style="color:red;"><strong>Pagar ({{ resultado.cantidad }})</strong></p>
+            {% else %}
+                <p style="color:green;"><strong>Sin stock para pagar</strong></p>
+            {% endif %}
         {% endif %}
     {% endif %}
-{% endif %}
+</body>
+</html>
