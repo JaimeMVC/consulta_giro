@@ -16,7 +16,7 @@ hoja = wb.active
 for i, fila in enumerate(hoja.iter_rows(values_only=True), start=1):
     if fila and "Número de material" in [str(celda).strip() for celda in fila if celda]:
         cabeceras = [str(celda).strip() for celda in fila]
-        fila_inicio = i + 1  # Los datos empiezan justo después
+        fila_inicio = i + 1
         break
 else:
     raise ValueError("No se encontró la fila con cabeceras esperadas")
@@ -29,24 +29,45 @@ i_almacen = cabeceras.index("Alm.")
 i_unidad = cabeceras.index("UMB")
 i_cantidad = cabeceras.index("Libre utilización")
 
+# Crear un diccionario para almacenar los datos
+materiales = {}
+
 # Recorrer datos
 for fila in hoja.iter_rows(min_row=fila_inicio, values_only=True):
     try:
         codigo = str(fila[i_codigo]).strip()
-        ubicacion = str(fila[i_almacen]).strip()
+        almacen = str(fila[i_almacen]).strip()
         unidad = str(fila[i_unidad]).strip()
         cantidad = int(fila[i_cantidad]) if fila[i_cantidad] is not None else 0
     except (TypeError, ValueError, IndexError):
         continue
 
-    Material.objects.update_or_create(
-        codigo=codigo,
-        defaults={
+    if not codigo:
+        continue
+
+    # Si es W199, guardamos como prioridad
+    if almacen == "W199":
+        materiales[codigo] = {
             'nombre': f"Material {codigo}",
             'cantidad': cantidad,
             'unidad': unidad,
-            'ubicacion': ubicacion
+            'ubicacion': almacen
         }
-    )
+    else:
+        # Si no está ya en el dict, lo marcamos con cantidad 0 en W199
+        if codigo not in materiales:
+            materiales[codigo] = {
+                'nombre': f"Material {codigo}",
+                'cantidad': 0,
+                'unidad': unidad,
+                'ubicacion': "W199"
+            }
 
-    print(f"Actualizado: {codigo}")
+# Guardar en base de datos
+for codigo, datos in materiales.items():
+    Material.objects.update_or_create(
+        codigo=codigo,
+        defaults=datos
+    )
+    print(f"Actualizado: {codigo} → cantidad {datos['cantidad']}")
+
