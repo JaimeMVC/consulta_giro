@@ -1,31 +1,20 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Consulta de Stock</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <h2>Consultar Material</h2>
-    <form method="get" action="/buscar/">
-        <label for="codigo">Código de material:</label>
-        <input type="text" name="codigo" required>
-        <button type="submit">Buscar</button>
-    </form>
+{% if resultado %}
+    {% if resultado == "No encontrado" %}
+        <p>Material no encontrado.</p>
+    {% else %}
+        <h3>Resultado:</h3>
+        <ul>
+            <li><strong>Código:</strong> {{ resultado.codigo }}</li>
+            <li><strong>Nombre:</strong> {{ resultado.nombre }}</li>
+            <li><strong>Cantidad:</strong> {{ resultado.cantidad }}</li>
+            <li><strong>Unidad:</strong> {{ resultado.unidad }}</li>
+            <li><strong>Ubicación:</strong> {{ resultado.ubicacion }}</li>
+        </ul>
 
-    {% if resultado %}
-        {% if resultado == "No encontrado" %}
-            <p>Material no encontrado.</p>
+        {% if resultado.cantidad < 0 %}
+            <p style="color:red;"><strong>Pagar ({{ resultado.cantidad }})</strong></p>
         {% else %}
-            <h3>Resultado:</h3>
-            <ul>
-                <li><strong>Código:</strong> {{ resultado.codigo }}</li>
-                <li><strong>Nombre:</strong> {{ resultado.nombre }}</li>
-                <li><strong>Cantidad:</strong> {{ resultado.cantidad }}</li>
-                <li><strong>Unidad:</strong> {{ resultado.unidad }}</li>
-                <li><strong>Ubicación:</strong> {{ resultado.ubicacion }}</li>
-            </ul>
+            <p style="color:green;"><strong>Sin stock para pagar</strong></p>
         {% endif %}
     {% endif %}
-</body>
-</html>
+{% endif %}
