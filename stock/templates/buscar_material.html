@@ -112,7 +112,7 @@
                 <p><strong>Ubicación:</strong> {{ material.ubicacion }}</p>
 
                 {% if material.cantidad < 0 %}
-                    <p class="mensaje sin-stock">Pagar {{ material.cantidad|abs }} unidades</p>
+                    <p class="mensaje sin-stock">Pagar {{ material.cantidad_abs }} unidades</p>
                 {% else %}
                     <p class="mensaje stock-ok">Sin stock para pagar</p>
                 {% endif %}

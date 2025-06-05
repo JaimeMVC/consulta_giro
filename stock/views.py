@@ -1,14 +1,14 @@
 from django.shortcuts import render
-from stock.models import Material
+from .models import Material
 
 def buscar_material(request):
-    resultado = None
-
-    if request.method == "POST":
-        codigo = request.POST.get("codigo", "").strip()
+    material = None
+    codigo = ""
+    if request.method == 'POST':
+        codigo = request.POST.get('codigo')
         try:
-            resultado = Material.objects.get(codigo=codigo)
+            material = Material.objects.get(codigo=codigo)
+            material.cantidad_abs = abs(material.cantidad)  # 👈 agregamos este atributo para el template
         except Material.DoesNotExist:
-            resultado = "No encontrado"
-
-    return render(request, "buscar_material.html", {"resultado": resultado})
+            material = None
+    return render(request, 'buscar_material.html', {'material': material, 'codigo': codigo})
