@@ -2,145 +2,114 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Consulta de Stock</title>
+    <title>Consulta de Material</title>
     <style>
         body {
-            margin: 0;
-            background-color: #0D1731;
-            color: #FFFFFF;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Header */
-        .header {
-            background-color: #000A1A;
-            padding: 10px 20px;
+            background-color: #0f1a3c;
+            font-family: Arial, sans-serif;
+            color: #ffffff;
             display: flex;
+            justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            height: 100vh;
         }
 
-        .header img {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .header-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        /* Main content */
         .container {
-            text-align: center;
-            padding: 2rem;
+            background-color: #1e2b4a;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
         }
 
         h1 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
         }
 
-        form {
-            margin-bottom: 2rem;
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #ffffff;
         }
 
         input[type="text"] {
+            width: 100%;
             padding: 10px;
-            width: 250px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            margin-bottom: 20px;
         }
 
         button {
-            background-color: #E50914;
+            width: 100%;
+            background-color: #e30613;
             color: white;
-            padding: 10px 20px;
+            padding: 10px;
             border: none;
-            margin-left: 10px;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
         }
 
-        button:hover {
-            background-color: #ff2c2c;
-        }
-
         .resultado {
-            background-color: white;
-            color: #0D1731;
-            padding: 1.5rem;
+            margin-top: 20px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 15px;
             border-radius: 8px;
-            width: fit-content;
-            margin: 0 auto;
-            box-shadow: 0px 0px 8px rgba(255, 0, 0, 0.3);
         }
 
-        .mensaje {
-            margin-top: 1rem;
+        .mensaje-stock-negativo {
+            color: red;
             font-weight: bold;
         }
 
-        .sin-stock {
-            color: #E50914;
+        .mensaje-stock-positivo {
+            color: green;
+            font-weight: bold;
         }
 
-        .stock-ok {
-            color: #007BFF;
+        .mensaje-error {
+            margin-top: 15px;
+            background-color: #e30613;
+            padding: 12px;
+            border-radius: 8px;
+            color: #ffffff;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/92/CEVA_Logo_2020.svg" alt="CEVA Logistics Logo">
-        <div class="header-title">CEVA Logistics - Consulta de Stock</div>
-    </div>
+<div class="container">
+    <h1>Consulta de Material</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="codigo">Código de material:</label>
+        <input type="text" name="codigo" id="codigo" required>
+        <button type="submit">Buscar</button>
+    </form>
 
-    <div class="container">
-        <h1>Consulta de Stock de Material</h1>
-        
-        <form method="GET">
-            <input type="text" name="codigo" placeholder="Ingrese el código..." required>
-            <button type="submit">Buscar</button>
-        </form>
+    {% if material %}
+        <div class="resultado">
+            <p><strong>Código:</strong> {{ material.codigo }}</p>
+            <p><strong>Cantidad:</strong> {{ material.cantidad }} {{ material.unidad }}</p>
+            <p><strong>Ubicación:</strong> {{ material.ubicacion }}</p>
 
-        {% if material %}
-            <div class="resultado">
-                <p><strong>Código:</strong> {{ material.codigo }}</p>
-                <p><strong>Cantidad:</strong> {{ material.cantidad }} {{ material.unidad }}</p>
-                <p><strong>Ubicación:</strong> {{ material.ubicacion }}</p>
-
-                {% if material.cantidad < 0 %}
-                    <p class="mensaje sin-stock">Pagar {{ material.cantidad_abs }} unidades</p>
-                {% else %}
-                    <p class="mensaje stock-ok">Sin stock para pagar</p>
-                {% endif %}
-            </div>
-        {% elif codigo %}
-            <p class="mensaje sin-stock">Material no encontrado en base de datos.</p>
-        {% endif %}
-    </div>
-</body>
-</html>
-    {% if resultado == "No encontrado" %}
-            <p>Material no encontrado.</p>
-        {% else %}
-            <h3>Resultado:</h3>
-            <ul>
-                <li><strong>Código:</strong> {{ resultado.codigo }}</li>
-                <li><strong>Nombre:</strong> {{ resultado.nombre }}</li>
-                <li><strong>Cantidad:</strong> {{ resultado.cantidad }}</li>
-                <li><strong>Unidad:</strong> {{ resultado.unidad }}</li>
-                <li><strong>Ubicación:</strong> {{ resultado.ubicacion }}</li>
-            </ul>
-
-            {% if resultado.cantidad < 0 %}
-                <p style="color:red;"><strong>Pagar ({{ resultado.cantidad }})</strong></p>
+            {% if material.cantidad < 0 %}
+                <p class="mensaje-stock-negativo">Pagar {{ material.cantidad|floatformat:0|slice:"1:" }} unidades</p>
             {% else %}
-                <p style="color:green;"><strong>Sin stock para pagar</strong></p>
+                <p class="mensaje-stock-positivo">Sin stock para pagar</p>
             {% endif %}
-        {% endif %}
+        </div>
+    {% elif codigo %}
+        <div class="mensaje-error">
+            Material no encontrado en base de datos.
+        </div>
     {% endif %}
+</div>
 </body>
 </html>
