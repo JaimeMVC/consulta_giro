@@ -113,7 +113,7 @@ STATIC_URL = '/static/'
 
 # Ruta para encontrar archivos estáticos como imágenes
 STATICFILES_DIRS = [
-    BASE_DIR / 'stock' / 'static',
+    BASE_DIR / 'static',
 ]
 
 # Carpeta donde Django recopilará los archivos estáticos (en producción)
