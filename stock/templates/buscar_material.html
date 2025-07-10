@@ -90,13 +90,14 @@
         {% if material %}
         <div class="resultado">
             <p><strong>Código:</strong> {{ material.codigo }}</p>
-            <p><strong>Descripción:</strong> {{ descripcion|default:"No disponible" }}</p>
-            <p><strong>Línea:</strong> {{ linea|default:"No disponible" }}</p>
+            <p><strong>Descripción:</strong> {{ descripcion }}</p>
+            <p><strong>Línea:</strong> {{ linea }}</p>
 
             {% if material.cantidad < 0 %}
                 <p class="pagar">Pagar {{ material.cantidad|floatformat:0|slice:"1:" }} unidades</p>
             {% else %}
                 <p class="sin-stock">Sin stock para pagar</p>
+                <p><strong>STOCK EN LÍNEA:</strong> {{ stock_linea|default:"0"|floatformat:0 }}</p>
             {% endif %}
         </div>
         {% elif codigo %}
