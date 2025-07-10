@@ -2,44 +2,44 @@ from django.shortcuts import render
 from .models import Material
 import pandas as pd
 import os
+from django.conf import settings
 
 def buscar_material(request):
     material = None
-    codigo = ""
+    codigo = None
     linea = None
+    descripcion = None
 
     if request.method == 'POST':
-        codigo = request.POST.get('codigo', '').strip()
+        codigo = request.POST.get('codigo')
+
+        # Buscar en base de datos
         try:
             material = Material.objects.get(codigo=codigo)
         except Material.DoesNotExist:
             material = None
 
+        # Ruta al archivo Excel en la raíz del proyecto
+        excel_path = os.path.join(settings.BASE_DIR, 'Master de materiales.xlsx')
+
         try:
-            excel_path = os.path.join(os.path.dirname(__file__), '..', 'Master de materiales.xlsx')
-            df = pd.read_excel(excel_path, sheet_name="Master")
+            df = pd.read_excel(excel_path, sheet_name='Master')
 
-            print("📥 Código ingresado:", codigo)
-            print("🧾 Columnas del Excel:", df.columns.tolist())
-            print("🔍 Primeras filas del Excel:\n", df.head())
+            # Eliminar espacios en nombres de columnas (por si acaso)
+            df.columns = df.columns.str.strip()
 
-            # Forzar tipo string en columna y buscar coincidencia exacta
-            df['Número de material'] = df['Número de material'].astype(str)
-            fila = df[df['Número de material'] == codigo]
-
-            print("✅ Coincidencia encontrada:\n", fila)
+            # Buscar fila que coincida con el código
+            fila = df[df['Número de material'].astype(str) == str(codigo)]
 
             if not fila.empty:
-                linea = fila.iloc[0]['Línea']  # O el nombre exacto de la columna
-                print("🧵 Línea encontrada:", linea)
-            else:
-                print("⚠️ Código no encontrado en el Excel.")
-
+                linea = fila.iloc[0]['Línea']
+                descripcion = fila.iloc[0]['Texto breve de material']
         except Exception as e:
-            print("❌ Error leyendo el Excel:", e)
+            print(f"Error al leer el archivo Excel: {e}")
 
     return render(request, 'buscar_material.html', {
         'material': material,
         'codigo': codigo,
-        'linea': linea
+        'linea': linea,
+        'descripcion': descripcion
     })
