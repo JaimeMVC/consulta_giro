@@ -1,3 +1,5 @@
+import pandas as pd
+
 from django.urls import path
 from . import views
 

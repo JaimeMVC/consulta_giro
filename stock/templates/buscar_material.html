@@ -78,7 +78,7 @@
 </head>
 <body>
     <div class="container">
-        <img src="{% static 'stock/logo_ceva.png' %}" alt="Logo CEVA">
+        <img src="{% static 'stock/logo_ceva.png' %}" alt="Logo CEVA" class="logo">
         <h1>Consulta de Material</h1>
         <form method="post">
             {% csrf_token %}
@@ -91,6 +91,10 @@
         <div class="resultado">
             <p><strong>Código:</strong> {{ material.codigo }}</p>
             <p><strong>Ubicación:</strong> {{ material.ubicacion }}</p>
+
+            {% if linea %}
+                <p><strong>Línea:</strong> {{ linea }}</p>
+            {% endif %}
 
             {% if material.cantidad < 0 %}
                 <p class="pagar">Pagar {{ material.cantidad|floatformat:0|slice:"1:" }} unidades</p>
